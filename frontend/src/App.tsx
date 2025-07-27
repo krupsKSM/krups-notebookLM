@@ -76,8 +76,8 @@ function App() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-200 px-4 py-10">
-      <div className="mt-auto mb-auto">
+    <main className="min-h-screen bg-gray-200 px-4 py-10 flex items-center justify-center">
+      <div className="mt-auto mb-auto ">
         <PdfUploadCard
           onFileSelected={handleFileSelected}
           uploading={uploading}
