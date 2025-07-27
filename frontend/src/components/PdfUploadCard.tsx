@@ -61,7 +61,7 @@ const PdfUploadCard = ({ onFileSelected, uploading, uploadProgress, file }: PdfU
   return (
     <>
       <div
-        className={`cursor-pointer rounded-xl shadow-md p-8 text-center z-10 w-full max-w-sm sm:w-80 mx-auto
+        className={`cursor-pointer rounded-xl shadow-md p-8 text-center z-10 w-full max-w-sm sm:w-80 mx-auto 
           ${isDragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-white'}
           ${uploading ? 'opacity-50 pointer-events-none' : ''}
           border-2 transition-colors duration-200`}

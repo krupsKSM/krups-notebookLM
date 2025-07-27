@@ -1,5 +1,3 @@
-// src/controllers/pdfController.ts
-
 import { Request, Response, NextFunction } from 'express'
 import path from 'path'
 import { extractPdfTextByPage } from '../services/pdfTextService'
@@ -16,36 +14,34 @@ import { saveDocument } from '../services/inMemoryDocumentStore'
  */
 export const uploadPdf = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Ensure a file was uploaded by multer
     if (!req.file) {
       return res.status(400).json({ error: 'PDF file is required' })
     }
 
-    // Construct absolute file path to uploaded PDF
     const filePath = path.join(process.cwd(), 'uploads', req.file.filename)
+    const { pages, numPages } = await extractPdfTextByPage(filePath)
 
-    // Extract array of texts, one per PDF page
-    const pages = await extractPdfTextByPage(filePath)
-
-    // Save extracted texts in an in-memory store for further processing (embedding, chat)
+    // Save extracted text pages in memory keyed by filename
     saveDocument(req.file.filename, req.file.originalname, pages)
 
-    // Construct public URL for frontend to access uploaded PDF
     const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
 
-    // Respond with metadata and total pages count (do not expose extracted raw text)
-    return res.status(200).json({
+    res.status(200).json({
       message: 'File uploaded & text extracted successfully',
       file: {
         filename: req.file.filename,
         originalname: req.file.originalname,
         size: req.file.size,
         url: fileUrl,
-        totalPages: pages.length, // Share total pages info
-      },
+
+        // Return the accurate physical page count to frontend
+        totalPages: numPages,
+
+        // Optional: count of extracted text pages (approximate)
+        extractedPagesCount: pages.length
+      }
     })
   } catch (error) {
-    // Pass any errors to global error handling middleware
     next(error)
   }
 }
