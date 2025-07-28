@@ -12,19 +12,24 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "axios": "^1.11.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "form-data": "^4.0.4",
     "multer": "^2.0.2",
-    "pdf-parse": "^1.1.1"
+    "pdf-parse": "^1.1.1",
+    "pdfjs-dist": "^5.4.54"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.3",
+    "@types/form-data": "^2.2.1",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.1.0",
     "@types/pdf-parse": "^1.1.5",
+    "@types/pdfjs-dist": "^2.10.377",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"
