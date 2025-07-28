@@ -1,3 +1,4 @@
+
 /**
  * Service to maintain an in-memory store for uploaded documents and their extracted page text.
  * This is a simple storage solution for development and prototyping.

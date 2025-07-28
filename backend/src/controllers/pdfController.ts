@@ -1,16 +1,15 @@
 import { Request, Response, NextFunction } from 'express'
 import path from 'path'
-import { extractPdfTextByPage } from '../services/pdfTextService'
 import { saveDocument } from '../services/inMemoryDocumentStore'
+import { parsePdfWithLlamaParse, LlamaParseChunk } from '../services/llamaParseService'
 
 /**
- * Handles PDF upload request.
- * - Validates presence of uploaded file.
- * - Reads PDF from disk using absolute path.
- * - Extracts text content by page.
- * - Stores the extracted page texts in-memory keyed by filename.
- * - Constructs public URL to the uploaded PDF.
- * - Returns upload metadata and total page count (no raw text in response).
+ * Handles PDF upload request:
+ * - Validates uploaded PDF.
+ * - Calls LlamaParse microservice to parse file and get markdown chunks.
+ * - Assigns fallback page numbers if missing in chunks.
+ * - Saves chunks in-memory.
+ * - Responds with file metadata and total pages.
  */
 export const uploadPdf = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -19,29 +18,58 @@ export const uploadPdf = async (req: Request, res: Response, next: NextFunction)
     }
 
     const filePath = path.join(process.cwd(), 'uploads', req.file.filename)
-    const { pages, numPages } = await extractPdfTextByPage(filePath)
 
-    // Save extracted text pages in memory keyed by filename
-    saveDocument(req.file.filename, req.file.originalname, pages)
+    // Log the file path being sent for parsing
+    console.log("Calling LlamaParse microservice on:", filePath)
 
+    // Call LlamaParse microservice to parse the PDF
+    const parseResult = await parsePdfWithLlamaParse(filePath)
+
+    // Log raw microservice response for debugging
+    console.log("LlamaParse microservice response:", parseResult)
+
+    // Defensive check: must have chunks array
+    if (!parseResult || !Array.isArray(parseResult.chunks)) {
+      return res.status(500).json({ error: 'Invalid response from LlamaParse microservice' })
+    }
+
+    // -------- Fallback: assign page numbers if missing ----------
+    const chunksWithPageNumbers: LlamaParseChunk[] = parseResult.chunks.map((chunk: LlamaParseChunk, idx: number) => {
+      const assignedPage = (chunk.page == null) ? idx + 1 : chunk.page
+      return {
+        ...chunk,
+        page: assignedPage,
+      }
+    })
+
+    // Save the page texts in-memory store with assured page numbering
+    saveDocument(
+      req.file.filename,
+      req.file.originalname,
+      chunksWithPageNumbers.map((chunk) => chunk.text)
+    )
+
+    const totalPages = chunksWithPageNumbers.length
+
+    // Construct the file URL for frontend viewing
     const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
 
+    // Send response including metadata and total page count
     res.status(200).json({
-      message: 'File uploaded & text extracted successfully',
+      message: 'File uploaded & parsed successfully with fallback page numbering',
       file: {
         filename: req.file.filename,
         originalname: req.file.originalname,
         size: req.file.size,
         url: fileUrl,
-
-        // Return the accurate physical page count to frontend
-        totalPages: numPages,
-
-        // Optional: count of extracted text pages (approximate)
-        extractedPagesCount: pages.length
-      }
+        totalPages,
+        // optionally send chunks metadata for debugging or later frontend use:
+        // chunks: chunksWithPageNumbers,
+      },
     })
   } catch (error) {
+    // Log error stack for debugging
+    console.error('Error in uploadPdf controller:', error)
     next(error)
   }
 }

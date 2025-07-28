@@ -4,6 +4,8 @@ import pdfRoutes from './routes/pdfRoutes'
 import errorMiddleware from './middlewares/errorMiddleware'
 import path from 'path'
 import multer from 'multer' 
+import chatRoutes from './routes/chatRoutes'
+import embeddingRoutes from './routes/embeddingRoutes';
 
 const app: Application = express()
 
@@ -13,8 +15,10 @@ app.use(express.json())
 // Serve uploaded PDF files statically
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')))
 
-// PDF routes (upload and others)
+// PDF routes 
 app.use('/api/pdf', pdfRoutes)
+app.use('/api/chat', chatRoutes)
+app.use('/api/embedding', embeddingRoutes);
 
 // Multer error handler middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
