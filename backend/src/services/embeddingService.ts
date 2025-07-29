@@ -40,7 +40,8 @@ export async function getEmbeddingsBatch(texts: string[]): Promise<number[][]> {
     }
 
     // Extract embeddings from response data
-    return response.data.map(entry => entry.embedding)
+    return response.data.map((entry: { embedding: number[] }) => entry.embedding)
+
   } catch (err: any) {
     // Handle rate limiting/quota exceeded errors explicitly
     if (err.status === 429) {
