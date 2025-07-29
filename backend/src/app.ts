@@ -25,7 +25,10 @@ app.use(express.json())
 // Files are physically read from 'uploads' directory in project root
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')))
 
-// Mount modularized API route handlers
+// Root health check endpoint
+app.get('/', (req: Request, res: Response) => {
+  res.send('Backend service is running!');
+})
 
 // Routes related to PDF upload and processing
 app.use('/api/pdf', pdfRoutes)
