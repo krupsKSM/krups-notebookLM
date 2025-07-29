@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import path from 'path'
-import { saveDocument } from '../services/inMemoryStore'
+import { saveDocument } from '../services/inMemoryDocumentStore'
 import { parsePdfWithLlamaParse, LlamaParseChunk } from '../services/llamaParseService'
 
 /**
@@ -62,6 +62,9 @@ export const uploadPdf = async (req: Request, res: Response, next: NextFunction)
     // respecting possible proxy headers setting 'x-forwarded-proto'
     const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https'
     const safeProtocol = protocol === 'http' ? 'https' : protocol
+
+    console.log('x-forwarded-proto:', req.headers['x-forwarded-proto'], '| req.protocol:', req.protocol);
+
     const fileUrl = `${safeProtocol}://${req.get('host')}/uploads/${req.file.filename}`
 
     // Send success response to frontend with file metadata
