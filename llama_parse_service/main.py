@@ -27,6 +27,10 @@ app = FastAPI()
 UPLOAD_FOLDER = "uploaded_files"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+@app.get("/")
+async def root():
+    return {"message": "llama_parse_service is running"}
+
 @app.post("/parse_pdf/")
 async def parse_pdf(file: UploadFile = File(...)):
     """
