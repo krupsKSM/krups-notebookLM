@@ -6,7 +6,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
+temp_extract/
+fixed_extract/
 node_modules
 dist
 dist-ssr
@@ -25,5 +26,5 @@ __pycache__/
 *.sln
 *.sw?
 
-
+*.zip
 
