@@ -12,7 +12,17 @@ This application enables users to upload PDF documents and interact with their c
 - A clean, responsive UI with starter prompt recommendations.
 
 ---
+##  Live Demo URLs
 
+| Service       | URL |
+|---------------|-----|
+| **Frontend**  | [https://krups-notebooklm-frontend.onrender.com](https://krups-notebooklm-frontend.onrender.com) |
+| **Backend**   | [https://krups-notebooklm-backend1.onrender.com](https://krups-notebooklm-backend1.onrender.com) |
+| **Microservice (LlamaParse)** | [https://krups-notebooklm-pymicroservice.onrender.com](https://krups-notebooklm-pymicroservice.onrender.com) |
+
+👉 **Access the app via the frontend URL** — it’s the main entry point.
+
+---
 ## Technology Stack
 
 - **Frontend:** React, Tailwind CSS, `react-pdf`, `react-icons`
